@@ -1,8 +1,11 @@
 package ui;
 
 import java.awt.Container;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.IOException;
 import java.util.Random;
 
 import javax.swing.GroupLayout;
@@ -12,6 +15,8 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+
+import model.JottoModel;
 
 /**
  * TODO Write the specification for JottoGUI
@@ -24,12 +29,12 @@ public class JottoGUI extends JFrame {
     private final JButton newPuzzleButton;
     private final JTextField newPuzzleNumber;
     private final JLabel puzzleNumber;
+    private final JLabel newGuess;
     private final JTextField guess;
     private final JTable guessTable;
     private String currentPuzzleNum;
     
     private final GroupLayout groupLayout;
-    private final JLabel newGuess;
 
     /**
      * TODO Write the specification for this constructor
@@ -57,6 +62,7 @@ public class JottoGUI extends JFrame {
         
         guess = new JTextField();
         guess.setName("guess");
+        guess.addKeyListener(new GuessListener());
         
         guessTable = new JTable();
         guessTable.setName("guessTable");
@@ -113,6 +119,25 @@ public class JottoGUI extends JFrame {
         puzzleNumber.setText("Puzzle #" + currentPuzzleNum);
     }
     
+    private void guessWord(){
+        String input = guess.getText();
+        JottoModel JottoModel = new JottoModel(currentPuzzleNum);
+        try {
+            String guessResponse = JottoModel.makeGuess(input);
+            if(guessResponse.equals("guess 5 5")){
+                System.out.println("You win!");
+            }else{
+                System.out.println(guessResponse);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        
+        
+        guess.setText("");
+    }
+    
     private class NewPuzzleButtonListener implements MouseListener {
         public void mouseClicked(MouseEvent e) {
             updatePuzzleNumber();
@@ -133,6 +158,25 @@ public class JottoGUI extends JFrame {
         @Override
         public void mouseExited(MouseEvent e) {
         }
+    }
+    
+    private class GuessListener implements KeyListener {
+
+        @Override
+        public void keyTyped(KeyEvent e) {
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                guessWord();
+            }
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+        }
+        
     }
     
     /**
