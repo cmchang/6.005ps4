@@ -16,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
 
 import model.JottoModel;
@@ -110,6 +111,9 @@ public class JottoGUI extends JFrame {
                             .addComponent(guess))
                     .addComponent(guessTable)
             );
+        
+        pack();
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
     
     //Creates a random puzzle number from 1 to 10,000
