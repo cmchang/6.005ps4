@@ -120,6 +120,15 @@ public class JottoGUI extends JFrame {
     }
 
     private void updatePuzzleNumber(){
+        //Make sure all the threads for guessWord finished running
+        for(Thread thread: threads){
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        guess.setText("");
         boolean inputIsValidNum = newPuzzleNumber.getText().matches("\\d+");
         if (newPuzzleNumber.getText().equals("") | !inputIsValidNum) {
             currentPuzzleNum = CreateRandomPuzzleNum();
