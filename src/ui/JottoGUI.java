@@ -58,7 +58,7 @@ public class JottoGUI extends JFrame {
         newPuzzleNumber = new JTextField();
         newPuzzleNumber.setName("newPuzzleNumber");
         newPuzzleNumber.setSize(200, 40);
-        newPuzzleNumber.addKeyListener(new NewButtonListener());
+        newPuzzleNumber.addActionListener(new NewButtonListener());
         
         puzzleNumber = new JLabel();
         puzzleNumber.setName("puzzleNumber");
@@ -69,7 +69,7 @@ public class JottoGUI extends JFrame {
         
         guess = new JTextField();
         guess.setName("guess");
-        guess.addKeyListener(new GuessListener());
+        guess.addActionListener(new GuessListener());
         
         guessTable = new JTable(new DefaultTableModel(new Object[] {"Guess","Common Letters","Correct Position"},0));
         guessTable.setName("guessTable");
@@ -189,46 +189,24 @@ public class JottoGUI extends JFrame {
         }
     }
     
-    private class NewButtonListener implements KeyListener{
-
-        @Override
-        public void keyTyped(KeyEvent e) {
+    private class NewButtonListener implements ActionListener {
+        public void actionPerformed(ActionEvent event){
+            updatePuzzleNumber();
         }
-
-        @Override
-        public void keyPressed(KeyEvent e) {
-            if (e.getKeyCode() == KeyEvent.VK_ENTER){
-                updatePuzzleNumber();
-            }
-        }
-
-        @Override
-        public void keyReleased(KeyEvent e) {
-        }
-        
     }
-    
-    private class GuessListener implements KeyListener {
-        @Override
-        public void keyTyped(KeyEvent e) {
-        }
-        @Override
-        public void keyPressed(KeyEvent e) {
-            if (e.getKeyCode() == KeyEvent.VK_ENTER){
-                Thread thread;
-                synchronized (lock) {
-                    thread = new Thread() {
-                        public void run() { 
-                            guessWord(); 
-                            }
-                    };
-                    threads.add(thread);
-                }
-                thread.start();
+
+    private class GuessListener implements ActionListener {
+        public void actionPerformed(ActionEvent event){
+            Thread thread;
+            synchronized (lock) {
+                thread = new Thread() {
+                    public void run() { 
+                        guessWord(); 
+                        }
+                };
+                threads.add(thread);
             }
-        }
-        @Override
-        public void keyReleased(KeyEvent e) {
+            thread.start();
         }
     }
     
