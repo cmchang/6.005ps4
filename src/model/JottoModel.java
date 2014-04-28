@@ -3,7 +3,15 @@ import java.net.*;
 import java.io.*;
 
 /**
- * TODO Write the specification for JottoModel
+ * JottoModel contains a given and specific puzzleNumber and can interact with the server when a client
+ * makes a guess during the game.  JottoModel creates an unique URL request for the server and
+ * receives the server response.
+ * 
+ * The following are the only possible server responses:
+ *      guess [in common] [correct position]
+ *      error 0: Ill-formatted request.
+ *      error 1: Non-number puzzle ID.
+ *      error 2: Invalid guess. Length of guess != 5 or guess is not a dictionary word.
  */
 public class JottoModel {
     private final String puzzleNumber;

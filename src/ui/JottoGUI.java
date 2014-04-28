@@ -3,8 +3,6 @@ package ui;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
@@ -22,7 +20,26 @@ import javax.swing.table.DefaultTableModel;
 import model.JottoModel;
 
 /**
- * TODO Write the specification for JottoGUI
+ * JottoGUI creates a GUI for the Jotto game.  
+ * The client can choose a specific or random puzzle and can make guesses of the 5 letter word.
+ * 
+ * Threading:
+ * 
+ * To separate the GUI interactions from the back-end (sending/receiving messages from the server),
+ * threading is used.  This is implemented by creating a new thread with a lock for each new guess that is made.
+ * A new row is created in the JTable with the corresponding guess that was made.
+ * SwingUtilities.invokeLater is then used within the corresponding thread when the JTable needs to be updated 
+ * after the server response is received. 
+ * 
+ * In this implementation, if the client wants a new puzzle, we make sure all the threads have finished running
+ * before the puzzle changes.
+ * 
+ * Thread Safety Argument:
+ * 
+ * This is thread safe because there is a lock shared for each thread.  For each thread, a unique new JottoModel is 
+ * created and is the variables within the thread are not manipulated from outside the thread so there is no rep 
+ * exposure.
+ * 
  */
 public class JottoGUI extends JFrame {
     private final Object lock = new Object();
@@ -30,7 +47,7 @@ public class JottoGUI extends JFrame {
 
     private static final long serialVersionUID = 1L; // required by Serializable
 
-    // components to use in the GUI
+    // components  in the GUI
     private final JButton newPuzzleButton;
     private final JTextField newPuzzleNumber;
     private final JLabel puzzleNumber;
@@ -43,7 +60,11 @@ public class JottoGUI extends JFrame {
     private final GroupLayout groupLayout;
 
     /**
-     * TODO Write the specification for this constructor
+     * No arguments necessary for this constructor.  
+     * 
+     * A GUI is produced containing a randomized puzzle number (0 to 10,000).  The client can
+     * choose to play a new game (random or input a new number) or make a guess at what the 
+     * word is (by entering the word in the text field and hitting 'enter').
      */
     public JottoGUI() {
         currentPuzzleNum = CreateRandomPuzzleNum();
@@ -58,7 +79,7 @@ public class JottoGUI extends JFrame {
         newPuzzleNumber = new JTextField();
         newPuzzleNumber.setName("newPuzzleNumber");
         newPuzzleNumber.setSize(200, 40);
-        newPuzzleNumber.addActionListener(new NewButtonListener());
+        newPuzzleNumber.addActionListener(new NewPuzzleListener());
         
         puzzleNumber = new JLabel();
         puzzleNumber.setName("puzzleNumber");
@@ -74,12 +95,11 @@ public class JottoGUI extends JFrame {
         guessTable = new JTable(new DefaultTableModel(new Object[] {"Guess","Common Letters","Correct Position"},0));
         guessTable.setName("guessTable");
         tableModel = (DefaultTableModel) guessTable.getModel();
-        // TODO Problems 2, 3, 4, and 5
         
         this.setSize(300,300);
         
         /**
-         * Using the following as reference
+         * Using the following as reference for the groupLayout
          * http://docs.oracle.com/javase/tutorial/uiswing/layout/group.html
          */
         
@@ -123,6 +143,15 @@ public class JottoGUI extends JFrame {
         return ""+randNum;
     }
 
+    /**
+     * This method is called when either the newPuzzleButton is clicked
+     * or by the keyboard command "enter" in the newPuzzleNumber text field.
+     * 
+     * This method creates a randomized puzzle number if no number is given or if the
+     * give number is not valid (i.e. in correct range, not a number).
+     * This also updates all the GUI components with the new puzzle number and clears the JTable/Guess text field.
+     * 
+     */
     private void updatePuzzleNumber(){
         //Make sure all the threads for guessWord finished running
         for(Thread thread: threads){
@@ -133,14 +162,17 @@ public class JottoGUI extends JFrame {
             }
         }
         guess.setText("");
-        boolean inputIsValidNum = newPuzzleNumber.getText().matches("\\d+");
-        if (newPuzzleNumber.getText().equals("") | !inputIsValidNum) {
+        //checks if all digits in the string
+        boolean inputIsValidNum = newPuzzleNumber.getText().matches("\\d+"); 
+        if (newPuzzleNumber.getText().equals("") | !inputIsValidNum) { 
+            //if no number is specified or if the string contains non-digit characters, randomize new puzzle num
             currentPuzzleNum = CreateRandomPuzzleNum();
         }else{
             String text = newPuzzleNumber.getText();
             if((text.length() < 5 && !text.equals("0")) || text.equals("10000")){
+                //Checks that the given number is in the correct range 0 to 10,000
                 currentPuzzleNum = text;
-            }else{//the int is not within the valid range 0 to 10,000
+            }else{//the num is not within the valid range
                 currentPuzzleNum = CreateRandomPuzzleNum();
             }
         }
@@ -150,6 +182,13 @@ public class JottoGUI extends JFrame {
         tableModel.setRowCount(0);
     }
     
+    /**
+     * This method is called when the client is guessing a word in the game.
+     * Returns void.
+     * 
+     * A new JottoModel is created and interacts with the server.  The JTable
+     * is updated with the server response and is also displayed in the console.
+     */
     private void guessWord(){
         final String input = guess.getText();
         guess.setText(""); // placed early on so that the field clears as quickly as possible
@@ -183,18 +222,31 @@ public class JottoGUI extends JFrame {
         }
     }
     
+    /**
+     * Adds a listener for the newPuzzleButton.
+     * When the button is clicked, it puzzle number is updated.
+     */
     private class NewPuzzleButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent event){
             updatePuzzleNumber();
         }
     }
     
-    private class NewButtonListener implements ActionListener {
+    /**
+     * Adds a listener for the newPuzzleNumber text field.
+     * If "enter" is clicked by the keyboard while interacting with the text field, the puzzle number is updated. 
+     */
+    private class NewPuzzleListener implements ActionListener {
         public void actionPerformed(ActionEvent event){
             updatePuzzleNumber();
         }
     }
 
+    /**
+     * Adds a listener for the guess text field.
+     * If "enter" is clicked by the keyboard while interacting with the text field, the typed in guess if made. 
+     *
+     */
     private class GuessListener implements ActionListener {
         public void actionPerformed(ActionEvent event){
             Thread thread;

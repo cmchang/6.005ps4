@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 public class JottoModelTest {
     private final JottoModel JottoModel = new JottoModel("6005");
