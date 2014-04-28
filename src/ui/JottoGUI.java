@@ -169,8 +169,8 @@ public class JottoGUI extends JFrame {
             currentPuzzleNum = CreateRandomPuzzleNum();
         }else{
             String text = newPuzzleNumber.getText();
-            if((text.length() < 5 && !text.equals("0")) || text.equals("10000")){
-                //Checks that the given number is in the correct range 0 to 10,000
+            if((text.length() <= 5 && !text.equals("0")) || text.equals("99999")){
+                //Checks that the given number is in the correct range 0 to 99999
                 currentPuzzleNum = text;
             }else{//the num is not within the valid range
                 currentPuzzleNum = CreateRandomPuzzleNum();
