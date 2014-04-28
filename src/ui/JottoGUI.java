@@ -6,6 +6,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Random;
 
 import javax.swing.GroupLayout;
@@ -23,6 +24,8 @@ import model.JottoModel;
  * TODO Write the specification for JottoGUI
  */
 public class JottoGUI extends JFrame {
+    private final Object lock = new Object();
+    private ArrayList<Thread> threads = new ArrayList<Thread>();
 
     private static final long serialVersionUID = 1L; // required by Serializable
 
@@ -136,6 +139,8 @@ public class JottoGUI extends JFrame {
     
     private void guessWord(){
         String input = guess.getText();
+        guess.setText(""); // placed early on so that the field clears as quickly as possible
+
         JottoModel JottoModel = new JottoModel(currentPuzzleNum);
         tableModel.addRow(new Object[] {input,"",""});
         int curRow = tableModel.getRowCount()-1;
@@ -157,8 +162,6 @@ public class JottoGUI extends JFrame {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
-        guess.setText("");
     }
     
     private class NewPuzzleButtonListener implements MouseListener {
@@ -185,7 +188,16 @@ public class JottoGUI extends JFrame {
         }
         @Override
         public void keyPressed(KeyEvent e) {
-            if (e.getKeyCode() == KeyEvent.VK_ENTER) guessWord();
+            if (e.getKeyCode() == KeyEvent.VK_ENTER){
+                Thread thread;
+                synchronized (lock) {
+                    thread = new Thread() {
+                        public void run() { guessWord(); }
+                    };
+                    threads.add(thread);
+                }
+                thread.start();
+            }
         }
         @Override
         public void keyReleased(KeyEvent e) {
