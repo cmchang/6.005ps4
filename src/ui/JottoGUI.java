@@ -112,7 +112,6 @@ public class JottoGUI extends JFrame {
                     .addComponent(guessTable)
             );
         
-        pack();
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
     
@@ -151,27 +150,32 @@ public class JottoGUI extends JFrame {
     }
     
     private void guessWord(){
-        String input = guess.getText();
+        final String input = guess.getText();
         guess.setText(""); // placed early on so that the field clears as quickly as possible
+        tableModel.addRow(new Object[] {input,"",""});
+        final int curRow = tableModel.getRowCount()-1;
 
         JottoModel JottoModel = new JottoModel(currentPuzzleNum);
-        tableModel.addRow(new Object[] {input,"",""});
-        int curRow = tableModel.getRowCount()-1;
         try {
-            String guessResponse = JottoModel.makeGuess(input);
-            if(guessResponse.equals("guess 5 5")){
-                tableModel.setValueAt("You win!", curRow, 0);
-                System.out.println("You win!");
-            }else{
-                if(guessResponse.charAt(0) == 'g'){ //message will be "guess x y"
-                    String[] responseWords = guessResponse.split(" ");
-                    tableModel.setValueAt(responseWords[1], curRow, 1);
-                    tableModel.setValueAt(responseWords[2], curRow, 2);
-                }else{
-                    tableModel.setValueAt("Invalid guess.", curRow, 1);
+            final String guessResponse = JottoModel.makeGuess(input);
+            
+            SwingUtilities.invokeLater(new Runnable(){
+                public void run(){
+                    if(guessResponse.equals("guess 5 5")){
+                        tableModel.setValueAt("You win!", curRow, 0);
+                        System.out.println("You win!");
+                    }else{
+                        if(guessResponse.charAt(0) == 'g'){ //message will be "guess x y"
+                            String[] responseWords = guessResponse.split(" ");
+                            tableModel.setValueAt(responseWords[1], curRow, 1);
+                            tableModel.setValueAt(responseWords[2], curRow, 2);
+                        }else{
+                            tableModel.setValueAt("Invalid guess.", curRow, 1);
+                        }
+                        System.out.println(guessResponse);
+                    }
                 }
-                System.out.println(guessResponse);
-            }
+            });
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -205,7 +209,9 @@ public class JottoGUI extends JFrame {
                 Thread thread;
                 synchronized (lock) {
                     thread = new Thread() {
-                        public void run() { guessWord(); }
+                        public void run() { 
+                            guessWord(); 
+                            }
                     };
                     threads.add(thread);
                 }
