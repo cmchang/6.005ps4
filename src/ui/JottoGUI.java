@@ -1,10 +1,10 @@
 package ui;
 
 import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
@@ -53,7 +53,7 @@ public class JottoGUI extends JFrame {
         newPuzzleButton = new JButton();
         newPuzzleButton.setName("newPuzzleButton");
         newPuzzleButton.setText("New Puzzle");
-        newPuzzleButton.addMouseListener(new NewPuzzleButtonListener());
+        newPuzzleButton.addActionListener(new NewPuzzleButtonListener());
         
         newPuzzleNumber = new JTextField();
         newPuzzleNumber.setName("newPuzzleNumber");
@@ -183,21 +183,9 @@ public class JottoGUI extends JFrame {
         }
     }
     
-    private class NewPuzzleButtonListener implements MouseListener {
-        public void mouseClicked(MouseEvent e) {
+    private class NewPuzzleButtonListener implements ActionListener {
+        public void actionPerformed(ActionEvent event){
             updatePuzzleNumber();
-        }
-        @Override
-        public void mousePressed(MouseEvent e) {
-        }
-        @Override
-        public void mouseReleased(MouseEvent e) {
-        }
-        @Override
-        public void mouseEntered(MouseEvent e) {
-        }
-        @Override
-        public void mouseExited(MouseEvent e) {
         }
     }
     
