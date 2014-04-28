@@ -34,6 +34,7 @@ public class JottoGUITest {
      *                  (Console displayed "error 2: Invalid guess. Length of guess != 5 or guess is not a dictionary word.")
      *          (B2.3) an ill-formatted guess (i.e. "&*%") -> JTable displayed displayed "Invalid guess"
      *                  (Console displayed "error 0: Ill-formatted request.")
+     *          Note: no need trying to testing for error 1 ("Non-number puzzle ID." )because the GUI only allows valid puzzle numbers
      *      (B3) Slow request guess
      *          (B3.1) One single valid request using "*" (i.e. "hell*")
      *                 -> JTable eventually displayed correct guess response ("guess x y")
