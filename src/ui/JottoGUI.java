@@ -58,6 +58,7 @@ public class JottoGUI extends JFrame {
         newPuzzleNumber = new JTextField();
         newPuzzleNumber.setName("newPuzzleNumber");
         newPuzzleNumber.setSize(200, 40);
+        newPuzzleNumber.addKeyListener(new NewButtonListener());
         
         puzzleNumber = new JLabel();
         puzzleNumber.setName("puzzleNumber");
@@ -198,6 +199,25 @@ public class JottoGUI extends JFrame {
         @Override
         public void mouseExited(MouseEvent e) {
         }
+    }
+    
+    private class NewButtonListener implements KeyListener{
+
+        @Override
+        public void keyTyped(KeyEvent e) {
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_ENTER){
+                updatePuzzleNumber();
+            }
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+        }
+        
     }
     
     private class GuessListener implements KeyListener {
