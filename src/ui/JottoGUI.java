@@ -15,6 +15,7 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableModel;
 
 import model.JottoModel;
 
@@ -32,6 +33,7 @@ public class JottoGUI extends JFrame {
     private final JLabel newGuess;
     private final JTextField guess;
     private final JTable guessTable;
+    private final DefaultTableModel tableModel;
     private String currentPuzzleNum;
     
     private final GroupLayout groupLayout;
@@ -64,9 +66,9 @@ public class JottoGUI extends JFrame {
         guess.setName("guess");
         guess.addKeyListener(new GuessListener());
         
-        guessTable = new JTable();
+        guessTable = new JTable(new DefaultTableModel(new Object[] {"Guess","Common Letters","Correct Position"},0));
         guessTable.setName("guessTable");
-
+        tableModel = (DefaultTableModel) guessTable.getModel();
         // TODO Problems 2, 3, 4, and 5
         
         this.setSize(300,300);
@@ -92,7 +94,7 @@ public class JottoGUI extends JFrame {
                     .addGroup(groupLayout.createSequentialGroup()
                             .addComponent(newGuess)
                             .addComponent(guess))
-                            .addComponent(guessTable)
+                    .addComponent(guessTable)
             );
         groupLayout.setVerticalGroup(
                 groupLayout.createSequentialGroup()
@@ -103,7 +105,7 @@ public class JottoGUI extends JFrame {
                     .addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                             .addComponent(newGuess)
                             .addComponent(guess))
-                            .addComponent(guessTable)
+                    .addComponent(guessTable)
             );
     }
     
@@ -119,26 +121,42 @@ public class JottoGUI extends JFrame {
         if (newPuzzleNumber.getText().equals("") | !inputIsValidNum) {
             currentPuzzleNum = CreateRandomPuzzleNum();
         }else{
-            currentPuzzleNum = newPuzzleNumber.getText();
+            String text = newPuzzleNumber.getText();
+            if((text.length() < 5 && !text.equals("0")) || text.equals("10000")){
+                currentPuzzleNum = text;
+            }else{//the int is not within the valid range 0 to 10,000
+                currentPuzzleNum = CreateRandomPuzzleNum();
+            }
         }
         puzzleNumber.setText("Puzzle #" + currentPuzzleNum);
+        
+        //clear the guess table
+        tableModel.setRowCount(0);
     }
     
     private void guessWord(){
         String input = guess.getText();
         JottoModel JottoModel = new JottoModel(currentPuzzleNum);
+        tableModel.addRow(new Object[] {input,"",""});
+        int curRow = tableModel.getRowCount()-1;
         try {
             String guessResponse = JottoModel.makeGuess(input);
             if(guessResponse.equals("guess 5 5")){
+                tableModel.setValueAt("You win!", curRow, 0);
                 System.out.println("You win!");
             }else{
+                if(guessResponse.charAt(0) == 'g'){ //message will be "guess x y"
+                    String[] responseWords = guessResponse.split(" ");
+                    tableModel.setValueAt(responseWords[1], curRow, 1);
+                    tableModel.setValueAt(responseWords[2], curRow, 2);
+                }else{
+                    tableModel.setValueAt("Invalid guess.", curRow, 1);
+                }
                 System.out.println(guessResponse);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
-        
         
         guess.setText("");
     }
@@ -147,41 +165,31 @@ public class JottoGUI extends JFrame {
         public void mouseClicked(MouseEvent e) {
             updatePuzzleNumber();
         }
-
         @Override
         public void mousePressed(MouseEvent e) {
         }
-
         @Override
         public void mouseReleased(MouseEvent e) {
         }
-
         @Override
         public void mouseEntered(MouseEvent e) {
         }
-
         @Override
         public void mouseExited(MouseEvent e) {
         }
     }
     
     private class GuessListener implements KeyListener {
-
         @Override
         public void keyTyped(KeyEvent e) {
         }
-
         @Override
         public void keyPressed(KeyEvent e) {
-            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                guessWord();
-            }
+            if (e.getKeyCode() == KeyEvent.VK_ENTER) guessWord();
         }
-
         @Override
         public void keyReleased(KeyEvent e) {
         }
-        
     }
     
     /**
