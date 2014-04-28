@@ -115,7 +115,12 @@ public class JottoGUI extends JFrame {
     }
 
     private void updatePuzzleNumber(){
-        currentPuzzleNum = CreateRandomPuzzleNum();
+        boolean inputIsValidNum = newPuzzleNumber.getText().matches("\\d+");
+        if (newPuzzleNumber.getText().equals("") | !inputIsValidNum) {
+            currentPuzzleNum = CreateRandomPuzzleNum();
+        }else{
+            currentPuzzleNum = newPuzzleNumber.getText();
+        }
         puzzleNumber.setText("Puzzle #" + currentPuzzleNum);
     }
     
