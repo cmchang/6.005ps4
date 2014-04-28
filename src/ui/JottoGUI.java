@@ -26,7 +26,7 @@ public class JottoGUI extends JFrame {
     private final JLabel puzzleNumber;
     private final JTextField guess;
     private final JTable guessTable;
-    private int currentPuzzleNum;
+    private String currentPuzzleNum;
     
     private final GroupLayout groupLayout;
     private final JLabel newGuess;
@@ -35,7 +35,7 @@ public class JottoGUI extends JFrame {
      * TODO Write the specification for this constructor
      */
     public JottoGUI() {
-        currentPuzzleNum = 1;
+        currentPuzzleNum = CreateRandomPuzzleNum();
         
         // components must be named with "setName" as specified in the problem set
         // remember to use these objects in your GUI!
@@ -105,12 +105,12 @@ public class JottoGUI extends JFrame {
     private String CreateRandomPuzzleNum(){
         //note: nextInt generates num from 0 to x (exclusive)
         int randNum = (new Random()).nextInt(10000)+1;
-        
         return ""+randNum;
     }
 
     private void updatePuzzleNumber(){
-        System.out.println("click");
+        currentPuzzleNum = CreateRandomPuzzleNum();
+        puzzleNumber.setText("Puzzle #" + currentPuzzleNum);
     }
     
     private class NewPuzzleButtonListener implements MouseListener {
