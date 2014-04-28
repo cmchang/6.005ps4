@@ -152,6 +152,7 @@ public class JottoGUI extends JFrame {
     private void guessWord(){
         final String input = guess.getText();
         guess.setText(""); // placed early on so that the field clears as quickly as possible
+        
         tableModel.addRow(new Object[] {input,"",""});
         final int curRow = tableModel.getRowCount()-1;
 
