@@ -155,9 +155,12 @@ public class JottoGUI extends JFrame {
     private void updatePuzzleNumber(){
         //Make sure all the threads for guessWord finished running
         for(Thread thread: threads){
+            System.out.println("thread");
+
             try {
-                thread.join();
+                thread.join(5000); //waits at most 5 seconds for the thread to die
             } catch (InterruptedException e) {
+                System.out.println("took too long");
                 e.printStackTrace();
             }
         }
@@ -169,8 +172,8 @@ public class JottoGUI extends JFrame {
             currentPuzzleNum = CreateRandomPuzzleNum();
         }else{
             String text = newPuzzleNumber.getText();
-            if((text.length() <= 5 && !text.equals("0")) || text.equals("99999")){
-                //Checks that the given number is in the correct range 0 to 99999
+            if((text.length() > 0 && !text.equals("0"))){
+                //Checks that the given number is in the correct range (>=1)
                 currentPuzzleNum = text;
             }else{//the num is not within the valid range
                 currentPuzzleNum = CreateRandomPuzzleNum();
@@ -202,18 +205,31 @@ public class JottoGUI extends JFrame {
             
             SwingUtilities.invokeLater(new Runnable(){
                 public void run(){
-                    if(guessResponse.equals("guess 5 5")){
-                        tableModel.setValueAt("You win!", curRow, 0);
-                        System.out.println("You win!");
-                    }else{
-                        if(guessResponse.charAt(0) == 'g'){ //message will be "guess x y"
-                            String[] responseWords = guessResponse.split(" ");
-                            tableModel.setValueAt(responseWords[1], curRow, 1);
-                            tableModel.setValueAt(responseWords[2], curRow, 2);
+                    
+                    /**
+                     * This boolean makes sure that the current row (curRow) in the JTable
+                     * still exists.  This is necessary in case the user tries to change the puzzle
+                     * while in the middle of waiting for a response from the server.
+                     * 
+                     * This boolean checks to make sure the row still exists in the table before trying to
+                     * add the response back into the table.
+                     */
+                    boolean rowStillExists = tableModel.getRowCount() > curRow;
+                    //System.out.println("Does the row exist?: " + rowStillExists);
+                    if(rowStillExists){
+                        if(guessResponse.equals("guess 5 5")){
+                            tableModel.setValueAt("You win!", curRow, 0);
+                            System.out.println("You win!");
                         }else{
-                            tableModel.setValueAt("Invalid guess.", curRow, 1);
+                            if(guessResponse.charAt(0) == 'g'){ //message will be "guess x y"
+                                String[] responseWords = guessResponse.split(" ");
+                                tableModel.setValueAt(responseWords[1], curRow, 1);
+                                tableModel.setValueAt(responseWords[2], curRow, 2);
+                            }else{
+                                tableModel.setValueAt("Invalid guess.", curRow, 1);
+                            }
+                            System.out.println(guessResponse);
                         }
-                        System.out.println(guessResponse);
                     }
                 }
             });
