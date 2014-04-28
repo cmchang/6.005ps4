@@ -218,7 +218,7 @@ public class JottoGUI extends JFrame {
                     //System.out.println("Does the row exist?: " + rowStillExists);
                     if(rowStillExists){
                         if(guessResponse.equals("guess 5 5")){
-                            tableModel.setValueAt("You win!", curRow, 0);
+                            tableModel.setValueAt("You win!", curRow, 1);
                             System.out.println("You win!");
                         }else{
                             if(guessResponse.charAt(0) == 'g'){ //message will be "guess x y"

@@ -52,7 +52,7 @@ public class JottoModel {
         String URLrequest = "http://courses.csail.mit.edu/6.005/jotto.py?puzzle="
                 + puzzleNumber 
                 + "&guess=" 
-                + guess;
+                + guess.toLowerCase(); //to make guesses case-insensitive
         
         return new URL(URLrequest);
     }
