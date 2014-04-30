@@ -74,7 +74,7 @@ public class JottoGUI extends JFrame {
         newPuzzleButton = new JButton();
         newPuzzleButton.setName("newPuzzleButton");
         newPuzzleButton.setText("New Puzzle");
-        newPuzzleButton.addActionListener(new NewPuzzleButtonListener());
+        newPuzzleButton.addActionListener(new NewPuzzleListener());
         
         newPuzzleNumber = new JTextField();
         newPuzzleNumber.setName("newPuzzleNumber");
@@ -160,7 +160,6 @@ public class JottoGUI extends JFrame {
             try {
                 thread.join(5000); //waits at most 5 seconds for the thread to die
             } catch (InterruptedException e) {
-                System.out.println("took too long");
                 e.printStackTrace();
             }
         }
@@ -239,18 +238,9 @@ public class JottoGUI extends JFrame {
     }
     
     /**
-     * Adds a listener for the newPuzzleButton.
-     * When the button is clicked, it puzzle number is updated.
-     */
-    private class NewPuzzleButtonListener implements ActionListener {
-        public void actionPerformed(ActionEvent event){
-            updatePuzzleNumber();
-        }
-    }
-    
-    /**
-     * Adds a listener for the newPuzzleNumber text field.
+     * A listener for the newPuzzleNumber text field and for the newPuzzleButton.
      * If "enter" is clicked by the keyboard while interacting with the text field, the puzzle number is updated. 
+     * When the button is clicked, it puzzle number is updated.
      */
     private class NewPuzzleListener implements ActionListener {
         public void actionPerformed(ActionEvent event){
