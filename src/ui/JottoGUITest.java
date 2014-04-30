@@ -12,11 +12,13 @@ public class JottoGUITest {
      *          (A1.2) contained a valid number (i.e. 1, 56099 ,99999999999) -> the puzzle number was changed to the indicated number
      *          (A1.3) contained an invalid number (i.e. 0, and negative numbers) -> random number was produced
      *          (A1.4) contained non-number string -> random number was produced
+     *          (A1.5) contained a float > 0 -> random number was produced
      *      (A2) By hitting "enter" when typing into the newPuzzleNumber text field when the text field was
      *          (A2.1) empty -> random number was produced
      *          (A2.2) contained a valid number -> the puzzle number was changed to the indicated number
-     *          (A3.3) contained an invalid number (i.e. 0, and negative numbers) -> random number was produced
-     *          (A4.4) contained non-number string -> random number was produced
+     *          (A2.3) contained an invalid number (i.e. 0, and negative numbers) -> random number was produced
+     *          (A2.4) contained non-number string -> random number was produced
+     *          (A2.5) contained a float > 0 -> random number was produced
      *      (A3) When a guess (request to server) isn't completed yet 
      *           -> waits for the server response to complete before updating the puzzle number
      * (B) Creating a guess
